@@ -28,7 +28,7 @@ $adapter_config = [];
 $adapter_config['db_name'] ='db_name';
 $adapter_config['connection_string']="mongodb://127.0.0.1";
 $adapter_config['options'] =[];
-$m=new Soupmix\Adapters\MongoDB($adapter_config);
+$m=new Soupmix\MongoDB($adapter_config);
 
 
 $docs = [];
