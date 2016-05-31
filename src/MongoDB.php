@@ -65,7 +65,7 @@ class MongoDB implements Base
     public function get($collection, $docId)
     {
         $collection = $this->db->selectCollection($collection);
-        $filter = ['_id' => new \MongoDB\BSON\ObjectID($docId)];
+        $filter = ['_id' => new MongoDBLib\BSON\ObjectID($docId)];
         $options = [
             'typeMap' => ['root' => 'array', 'document' => 'array'],
         ];
@@ -78,16 +78,20 @@ class MongoDB implements Base
         return $result;
     }
 
-    public function update($collection, $filter, $values)
+    public function update($collection, $filters, $values)
     {
         $collection = $this->db->selectCollection($collection);
-        $filter = self::buildFilter($filter)[0];
-        $values_set = ['$set' => $values];
-        if (isset($filter['id'])) {
-            $filter['_id'] = new \MongoDB\BSON\ObjectID($filter['id']);
-            unset($filter['id']);
+        if (isset($filters['id'])) {
+            $filters['_id'] = new MongoDBLib\BSON\ObjectID($filters['id']);
+            unset($filters['id']);
         }
-        $result = $collection->updateMany($filter, $values_set);
+        $query_filters = [];
+        if ($filters != null) {
+            $query_filters = ['$and' => self::buildFilter($filters)];
+        }
+        $values_set = ['$set' => $values];
+
+        $result = $collection->updateMany($query_filters, $values_set);
 
         return $result->getModifiedCount();
     }
@@ -97,7 +101,7 @@ class MongoDB implements Base
         $collection = $this->db->selectCollection($collection);
         $filter = self::buildFilter($filter)[0];
         if (isset($filter['id'])) {
-            $filter['_id'] = new \MongoDB\BSON\ObjectID($filter['id']);
+            $filter['_id'] = new MongoDBLib\BSON\ObjectID($filter['id']);
             unset($filter['id']);
         }
         $result = $collection->deleteMany($filter);
@@ -109,7 +113,7 @@ class MongoDB implements Base
     {
         $collection = $this->db->selectCollection($collection);
         if (isset($filters['id'])) {
-            $filters['_id'] = new \MongoDB\BSON\ObjectID($filters['id']);
+            $filters['_id'] = new MongoDBLib\BSON\ObjectID($filters['id']);
             unset($filters['id']);
         }
         $query_filters = [];
