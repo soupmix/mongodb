@@ -65,14 +65,42 @@ class MongoDB implements Base
     public function get($collection, $docId)
     {
         $collection = $this->db->selectCollection($collection);
-        $filter = ['_id' => new MongoDBLib\BSON\ObjectID($docId)];
+
         $options = [
             'typeMap' => ['root' => 'array', 'document' => 'array'],
         ];
-        $result = $collection->findOne($filter, $options);
-        if ($result!==null) {
-            $result['id'] = (string) $result['_id'];
-            unset($result['_id']);
+
+        if (gettype($docId) == "array") {
+
+            $idList = [];
+            foreach ($docId as $itemId){
+                $idList[]=['_id'=>new MongoDBLib\BSON\ObjectID($itemId)];
+            }
+
+            //$filter = ['_id' => new MongoDBLib\BSON\ObjectID($docId)];
+            // {'$or':[{"_id":ObjectId("574d5b38a102fd10905a9183")}, {'_id':ObjectId("574d5b38a102fd10905a9182")}]}
+            $filter = ['$or'=>$idList];
+            $cursor = $collection->find($filter, $options);
+            $iterator = new \IteratorIterator($cursor);
+            $iterator->rewind();
+            $results=[];
+            while ($doc = $iterator->current()) {
+                if (isset($doc['_id'])) {
+                    $doc['id'] = (string) $doc['_id'];
+                    unset($doc['_id']);
+                }
+                $results[$doc['id']] = $doc;
+                $iterator->next();
+            }
+            return $results;
+        } else {
+            $filter = ['_id' => new MongoDBLib\BSON\ObjectID($docId)];
+            $result = $collection->findOne($filter, $options);
+            if ($result!==null) {
+                $result['id'] = (string) $result['_id'];
+                unset($result['_id']);
+            }
+
         }
 
         return $result;
