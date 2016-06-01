@@ -12,8 +12,9 @@ php:
 
 before_script:
   - pecl install mongodb
+  - echo "extension = mongodb.so" >> ~/.phpenv/versions/$(phpenv version-name)/etc/php.ini
   - sleep 10
-  - mongo mydb_test --eval 'db.addUser("soupmix", "test");'
+  - mongo mydb_test --eval 'db.addUser("travis", "test");'
   - composer install -n
 
 script:

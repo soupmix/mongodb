@@ -14,7 +14,7 @@ class MongoDBTest extends \PHPUnit_Framework_TestCase
     {
         $this->client = new MongoDB([
             'db_name' => 'mydb_test',
-            'connection_string' => "mongodb://soupmix:test@127.0.0.1",
+            'connection_string' => "mongodb://travis:test@127.0.0.1",
             'options' => []
         ]);
     }
