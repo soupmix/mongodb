@@ -217,6 +217,7 @@ class MongoDB implements Base
     {
         $filters = [];
         foreach ($filter as $key => $value) {
+            
             if (strpos($key, '__')!==false) {
                 preg_match('/__(.*?)$/i', $key, $matches);
                 $operator = $matches[1];
