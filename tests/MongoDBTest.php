@@ -1,20 +1,21 @@
 <?php
 namespace tests;
 
-use Soupmix\ElasticSearch;
+use Soupmix\MongoDB;
 
-class ElasticsearchTest extends \PHPUnit_Framework_TestCase
+class MongoDBTest extends \PHPUnit_Framework_TestCase
 {
     /**
-     * @var \Soupmix\ElasticSearch $client
+     * @var \Soupmix\MongoDB $client
      */
     protected $client = null;
 
     protected function setUp()
     {
-        $this->client = new ElasticSearch([
-            'db_name' => 'test',
-            'hosts'   => ['127.0.0.1:9200'],
+        $this->client = new MongoDB([
+            'db_name' => 'mydb_test',
+            'connection_string' => "mongodb://soupmix:test@127.0.0.1",
+            'options' => []
         ]);
     }
 
@@ -24,7 +25,7 @@ class ElasticsearchTest extends \PHPUnit_Framework_TestCase
         $document = $this->client->get('test', $docId);
         $this->assertArrayHasKey('title', $document);
         $this->assertArrayHasKey('id', $document);
-        $result = $this->client->delete('test', ['_id' => $docId]);
+        $result = $this->client->delete('test', ['id' => $docId]);
         $this->assertTrue($result == 1);
     }
 
@@ -37,7 +38,7 @@ class ElasticsearchTest extends \PHPUnit_Framework_TestCase
         $this->assertArrayHasKey('data', $results);
         $this->assertCount($results['total'], $results['data']);
 
-        $result = $this->client->delete('test', ['_id' => $docId1]);
+        $result = $this->client->delete('test', ['id' => $docId1]);
         $this->assertTrue($result == 1);
     }
 
