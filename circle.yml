@@ -1,5 +1,5 @@
 dependencies:
   pre:
     - pecl install mongodb-1.1.6
-    - echo "mongodb.so" >> /opt/circleci/.phpenv/versions/$(phpenv global)/etc/conf.d/mongodb.ini
+    - echo "extension = mongodb.so" >> /opt/circleci/.phpenv/versions/$(phpenv global)/etc/conf.d/mongodb.ini
     - sleep 10
