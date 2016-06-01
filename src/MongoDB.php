@@ -65,45 +65,50 @@ class MongoDB implements Base
     public function get($collection, $docId)
     {
         $collection = $this->db->selectCollection($collection);
+        if (gettype($docId) == "array") {
+            return $this->multiGet($collection, $docId);
+        } else {
+            return $this->singleGet($collection, $docId);
+        }
+    }
 
+    private function singleGet($collection, $docId)
+    {
         $options = [
             'typeMap' => ['root' => 'array', 'document' => 'array'],
         ];
-
-        if (gettype($docId) == "array") {
-
-            $idList = [];
-            foreach ($docId as $itemId){
-                $idList[]=['_id'=>new MongoDBLib\BSON\ObjectID($itemId)];
-            }
-
-            //$filter = ['_id' => new MongoDBLib\BSON\ObjectID($docId)];
-            // {'$or':[{"_id":ObjectId("574d5b38a102fd10905a9183")}, {'_id':ObjectId("574d5b38a102fd10905a9182")}]}
-            $filter = ['$or'=>$idList];
-            $cursor = $collection->find($filter, $options);
-            $iterator = new \IteratorIterator($cursor);
-            $iterator->rewind();
-            $results=[];
-            while ($doc = $iterator->current()) {
-                if (isset($doc['_id'])) {
-                    $doc['id'] = (string) $doc['_id'];
-                    unset($doc['_id']);
-                }
-                $results[$doc['id']] = $doc;
-                $iterator->next();
-            }
-            return $results;
-        } else {
-            $filter = ['_id' => new MongoDBLib\BSON\ObjectID($docId)];
-            $result = $collection->findOne($filter, $options);
-            if ($result!==null) {
-                $result['id'] = (string) $result['_id'];
-                unset($result['_id']);
-            }
-
+        $filter = ['_id' => new MongoDBLib\BSON\ObjectID($docId)];
+        $result = $collection->findOne($filter, $options);
+        if ($result!==null) {
+            $result['id'] = (string) $result['_id'];
+            unset($result['_id']);
         }
-
         return $result;
+    }
+
+    private function multiGet($collection, $docIds)
+    {
+        $options = [
+            'typeMap' => ['root' => 'array', 'document' => 'array'],
+        ];
+        $idList = [];
+        foreach ($docIds as $itemId) {
+            $idList[]=['_id'=>new MongoDBLib\BSON\ObjectID($itemId)];
+        }
+        $filter = ['$or'=>$idList];
+        $cursor = $collection->find($filter, $options);
+        $iterator = new \IteratorIterator($cursor);
+        $iterator->rewind();
+        $results=[];
+        while ($doc = $iterator->current()) {
+            if (isset($doc['_id'])) {
+                $doc['id'] = (string) $doc['_id'];
+                unset($doc['_id']);
+            }
+            $results[$doc['id']] = $doc;
+            $iterator->next();
+        }
+        return $results;
     }
 
     public function update($collection, $filters, $values)
@@ -118,8 +123,13 @@ class MongoDB implements Base
             $query_filters = ['$and' => self::buildFilter($filters)];
         }
         $values_set = ['$set' => $values];
+        try{
+            $result = $collection->updateMany($query_filters, $values_set);
 
-        $result = $collection->updateMany($query_filters, $values_set);
+        } catch (\Exception $e){
+            throw new \Exception($e->getMessage());
+        }
+
 
         return $result->getModifiedCount();
     }
@@ -128,6 +138,7 @@ class MongoDB implements Base
     {
         $collection = $this->db->selectCollection($collection);
         $filter = self::buildFilter($filter)[0];
+
         if (isset($filter['id'])) {
             $filter['_id'] = new MongoDBLib\BSON\ObjectID($filter['id']);
             unset($filter['id']);
