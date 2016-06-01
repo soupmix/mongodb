@@ -4,7 +4,7 @@ namespace Soupmix;
 /*
 MongoDB Adapter
 */
-Use MongoDB as MongoDBLib;
+
 
 class MongoDB implements Base
 {
@@ -22,7 +22,7 @@ class MongoDB implements Base
 
     public function connect($config)
     {
-        $this->conn = new MongoDBLib\Client($config['connection_string'], $config['options']);
+        $this->conn = new \MongoDB\Client($config['connection_string'], $config['options']);
         $this->database = $this->conn->{$this->dbName};
     }
 
@@ -74,7 +74,7 @@ class MongoDB implements Base
         $options = [
             'typeMap' => ['root' => 'array', 'document' => 'array'],
         ];
-        $filter = ['_id' => new MongoDBLib\BSON\ObjectID($docId)];
+        $filter = ['_id' => new \MongoDB\BSON\ObjectID($docId)];
         $result = $collection->findOne($filter, $options);
         if ($result!==null) {
             $result['id'] = (string) $result['_id'];
@@ -90,7 +90,7 @@ class MongoDB implements Base
         ];
         $idList = [];
         foreach ($docIds as $itemId) {
-            $idList[]=['_id'=>new MongoDBLib\BSON\ObjectID($itemId)];
+            $idList[]=['_id'=>new \MongoDB\BSON\ObjectID($itemId)];
         }
         $filter = ['$or'=>$idList];
         $cursor = $collection->find($filter, $options);
@@ -112,7 +112,7 @@ class MongoDB implements Base
     {
         $collection = $this->database->selectCollection($collection);
         if (isset($filters['id'])) {
-            $filters['_id'] = new MongoDBLib\BSON\ObjectID($filters['id']);
+            $filters['_id'] = new \MongoDB\BSON\ObjectID($filters['id']);
             unset($filters['id']);
         }
         $query_filters = [];
@@ -137,7 +137,7 @@ class MongoDB implements Base
         $filter = self::buildFilter($filter)[0];
 
         if (isset($filter['id'])) {
-            $filter['_id'] = new MongoDBLib\BSON\ObjectID($filter['id']);
+            $filter['_id'] = new \MongoDB\BSON\ObjectID($filter['id']);
             unset($filter['id']);
         }
         $result = $collection->deleteMany($filter);
@@ -149,7 +149,7 @@ class MongoDB implements Base
     {
         $collection = $this->database->selectCollection($collection);
         if (isset($filters['id'])) {
-            $filters['_id'] = new MongoDBLib\BSON\ObjectID($filters['id']);
+            $filters['_id'] = new \MongoDB\BSON\ObjectID($filters['id']);
             unset($filters['id']);
         }
         $query_filters = [];
