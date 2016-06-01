@@ -26,27 +26,25 @@ class MongoDB implements Base
         $this->db = $this->conn->{$this->dbName};
     }
 
-    public function create($collection, $config)
+    public function create($collection)
     {
         return $this->db->createCollection($collection);
     }
 
-    public function drop($collection, $config)
+    public function drop($collection)
     {
         return $this->db->dropCollection($collection);
     }
 
-    public function truncate($collection, $config)
+    public function truncate($collection)
     {
         $this->db->dropCollection($collection);
-
         return $this->db->createCollection($collection);
     }
 
     public function createIndexes($collection, $indexes)
     {
         $collection = $this->db->selectCollection($collection);
-
         return $collection->createIndexes($indexes);
     }
 
