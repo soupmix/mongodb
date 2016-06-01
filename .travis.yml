@@ -11,7 +11,8 @@ php:
   - hhvm
 
 before_script:
-  - sleep 15
+  - pecl install mongodb
+  - sleep 10
   - mongo mydb_test --eval 'db.addUser("soupmix", "test");'
   - composer install -n
 
