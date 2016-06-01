@@ -160,6 +160,10 @@ class MongoDB implements Base
             return ['filters'=>$query_filters, 'start'=>$start, 'limit'=>$limit];
         }
         $count = $collection->count($query_filters);
+
+        if($debug){
+            return ['filters'=>$query_filters, 'start'=>$start, 'limit'=>$limit,'sort'=>$sort];
+        }
         if ($count > 0) {
             $results = [];
             $options = [
@@ -188,9 +192,6 @@ class MongoDB implements Base
                 $options['sort'] = $sort;
             }
 
-            if($debug){
-                return ['filters'=>$query_filters, 'start'=>$start, 'limit'=>$limit,'sort'=>$sort,'fields'=>$projection];
-            }
             $cursor = $collection->find($query_filters, $options);
             $iterator = new \IteratorIterator($cursor);
             $iterator->rewind();
