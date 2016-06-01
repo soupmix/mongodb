@@ -12,7 +12,7 @@ class MongoDB implements Base
 
     private $dbName = null;
 
-    public $db = null;
+    public $database = null;
 
     public function __construct($config)
     {
@@ -23,34 +23,34 @@ class MongoDB implements Base
     public function connect($config)
     {
         $this->conn = new MongoDBLib\Client($config['connection_string'], $config['options']);
-        $this->db = $this->conn->{$this->dbName};
+        $this->database = $this->conn->{$this->dbName};
     }
 
     public function create($collection)
     {
-        return $this->db->createCollection($collection);
+        return $this->database->createCollection($collection);
     }
 
     public function drop($collection)
     {
-        return $this->db->dropCollection($collection);
+        return $this->database->dropCollection($collection);
     }
 
     public function truncate($collection)
     {
-        $this->db->dropCollection($collection);
-        return $this->db->createCollection($collection);
+        $this->database->dropCollection($collection);
+        return $this->database->createCollection($collection);
     }
 
     public function createIndexes($collection, $indexes)
     {
-        $collection = $this->db->selectCollection($collection);
+        $collection = $this->database->selectCollection($collection);
         return $collection->createIndexes($indexes);
     }
 
     public function insert($collection, $values)
     {
-        $collection = $this->db->selectCollection($collection);
+        $collection = $this->database->selectCollection($collection);
         $result = $collection->insertOne($values);
         $docId = $result->getInsertedId();
         if (is_object($docId)) {
@@ -62,12 +62,11 @@ class MongoDB implements Base
 
     public function get($collection, $docId)
     {
-        $collection = $this->db->selectCollection($collection);
+        $collection = $this->database->selectCollection($collection);
         if (gettype($docId) == "array") {
             return $this->multiGet($collection, $docId);
-        } else {
-            return $this->singleGet($collection, $docId);
         }
+        return $this->singleGet($collection, $docId);
     }
 
     private function singleGet($collection, $docId)
@@ -111,7 +110,7 @@ class MongoDB implements Base
 
     public function update($collection, $filters, $values)
     {
-        $collection = $this->db->selectCollection($collection);
+        $collection = $this->database->selectCollection($collection);
         if (isset($filters['id'])) {
             $filters['_id'] = new MongoDBLib\BSON\ObjectID($filters['id']);
             unset($filters['id']);
@@ -134,7 +133,7 @@ class MongoDB implements Base
 
     public function delete($collection, $filter)
     {
-        $collection = $this->db->selectCollection($collection);
+        $collection = $this->database->selectCollection($collection);
         $filter = self::buildFilter($filter)[0];
 
         if (isset($filter['id'])) {
@@ -148,7 +147,7 @@ class MongoDB implements Base
 
     public function find($collection, $filters, $fields = null, $sort = null, $start = 0, $limit = 25, $debug = false)
     {
-        $collection = $this->db->selectCollection($collection);
+        $collection = $this->database->selectCollection($collection);
         if (isset($filters['id'])) {
             $filters['_id'] = new MongoDBLib\BSON\ObjectID($filters['id']);
             unset($filters['id']);
@@ -156,6 +155,9 @@ class MongoDB implements Base
         $query_filters = [];
         if ($filters != null) {
             $query_filters = ['$and' => self::buildFilter($filters)];
+        }
+        if($debug){
+            return ['filters'=>$query_filters, 'start'=>$start, 'limit'=>$limit];
         }
         $count = $collection->count($query_filters);
         if ($count > 0) {
@@ -184,6 +186,10 @@ class MongoDB implements Base
                     }
                 }
                 $options['sort'] = $sort;
+            }
+
+            if($debug){
+                return ['filters'=>$query_filters, 'start'=>$start, 'limit'=>$limit,'sort'=>$sort,'fields'=>$projection];
             }
             $cursor = $collection->find($query_filters, $options);
             $iterator = new \IteratorIterator($cursor);
