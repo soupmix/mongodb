@@ -2,7 +2,7 @@
 
 
 [![Build Status](https://travis-ci.org/soupmix/mongodb.svg?branch=master)](https://travis-ci.org/soupmix/mongodb) [![Latest Stable Version](https://poser.pugx.org/soupmix/mongodb/v/stable)](https://packagist.org/packages/soupmix/mongodb) [![Total Downloads](https://poser.pugx.org/soupmix/mongodb/downloads)](https://packagist.org/packages/soupmix/mongodb) [![Latest Unstable Version](https://poser.pugx.org/soupmix/mongodb/v/unstable)](https://packagist.org/packages/soupmix/mongodb) [![License](https://poser.pugx.org/soupmix/mongodb/license)](https://packagist.org/packages/soupmix/mongodb)
-[![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/soupmix/mongodb/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/soupmix/mongodb/)
+[![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/soupmix/mongodb/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/soupmix/mongodb/) [![Code Coverage](https://scrutinizer-ci.com/g/soupmix/mongodb/badges/coverage.png?b=master)](https://scrutinizer-ci.com/g/soupmix/mongodb/?branch=master)
 
 Simple low level  MongoDB adapter to handle CRUD operations written in PHP. This library does not provide any ORM or ODM. 
 
