@@ -12,7 +12,7 @@ Simple low level  MongoDB adapter to handle CRUD operations written in PHP. This
 It's recommended that you use [Composer](https://getcomposer.org/) to install Soupmix.
 
 ```bash
-$ composer require soupmix/mongodb "~0.1"
+$ composer require soupmix/mongodb "~0.5"
 ```
 
 This will install Soupmix and all required dependencies. Soupmix requires PHP 5.4.0 or newer, mongodb extension: 1.1.0 or newer, [mongo-php-library](https://github.com/mongodb/mongo-php-library) library  or newer form MongoDB.
