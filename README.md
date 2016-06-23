@@ -15,7 +15,7 @@ It's recommended that you use [Composer](https://getcomposer.org/) to install So
 $ composer require soupmix/mongodb "~0.5"
 ```
 
-This will install Soupmix and all required dependencies. Soupmix requires PHP 5.4.0 or newer, mongodb extension: 1.1.0 or newer, [mongo-php-library](https://github.com/mongodb/mongo-php-library) library  or newer form MongoDB.
+This will install Soupmix and all required dependencies. Soupmix requires PHP 5.6.0 or newer, mongodb extension: 1.1.0 or newer, [mongo-php-library](https://github.com/mongodb/mongo-php-library) library  or newer form MongoDB.
 
 ## Documentation
 
@@ -101,7 +101,7 @@ $m->delete('users', $filter);
 
 
 // user's age lower_than_and_equal to 34 or greater_than_and_equal 36 but not 38
-$filter = [['age__lte'=>34,'age__gte'=>36],"age__not"=>38];
+$filter = [[['age__lte'=>34],['age__gte'=>36]],"age__not"=>38];
 
 //find users that has criteria encoded in $filter
 $docs = $m->find("users", $filter);
