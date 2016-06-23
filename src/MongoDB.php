@@ -219,33 +219,70 @@ class MongoDB implements Base
         foreach ($filter as $key => $value) {
             
             if (strpos($key, '__')!==false) {
-                preg_match('/__(.*?)$/i', $key, $matches);
-                $operator = $matches[1];
-                switch ($operator) {
-                    case '!in':
-                        $operator = 'nin';
-                        break;
-                    case 'not':
-                        $operator = 'ne';
-                        break;
-                    case 'wildcard':
-                        $operator = 'regex';
-                        $value = str_replace(array('?'), array('.'), $value);
-                        break;
-                    case 'prefix':
-                        $operator = 'regex';
-                        $value = $value.'*';
-                        break;
-                }
-                $key = str_replace($matches[0], '', $key);
-                $filters[] = [$key => ['$'.$operator => $value]];
-            } elseif (strpos($key, '__')===false && is_array($value)) {
-                $filters[]['$or'] = self::buildFilter($value);
+                $filters[] = self::buildFilterForKeys($key, $value);
+                //$filters = self::mergeFilters($filters, $tmpFilters);
+            } elseif (strpos($key, '__') === false && is_array($value)) {
+                $filters[]['$or'] = self::buildFilterForOr($value);
             } else {
                 $filters[][$key] = $value;
             }
         }
-
         return $filters;
     }
+
+    public static function buildFilterForOr($orValues)
+    {
+        $filters = [];
+        foreach ($orValues as $filter) {
+            $subKey = array_keys($filter)[0];
+            $subValue = $filter[$subKey];
+            if (strpos($subKey, '__')!==false) {
+                $filters[] = self::buildFilterForKeys($subKey, $subValue);
+               // $filters = self::mergeFilters($filters, $tmpFilters);
+            } else {
+                $filters[][$subKey] = $subValue;
+            }
+        }
+        return $filters;
+    }
+
+    private static function mergeFilters ($filters, $tmpFilters){
+
+        foreach ($tmpFilters as $fKey => $fVals) {
+            if (isset($filters[$fKey])) {
+                foreach ($fVals as $fVal) {
+                    $filters[$fKey][] = $fVal;
+                }
+            } else {
+                $filters[$fKey] = $fVals;
+            }
+        }
+        return $filters;
+    }
+
+    private static function buildFilterForKeys($key, $value)
+    {
+        preg_match('/__(.*?)$/i', $key, $matches);
+        $operator = $matches[1];
+        switch ($operator) {
+            case '!in':
+                $operator = 'nin';
+                break;
+            case 'not':
+                $operator = 'ne';
+                break;
+            case 'wildcard':
+                $operator = 'regex';
+                $value = str_replace(array('?'), array('.'), $value);
+                break;
+            case 'prefix':
+                $operator = 'regex';
+                $value = $value.'*';
+                break;
+        }
+        $key = str_replace($matches[0], '', $key);
+        $filters= [$key => ['$'.$operator => $value]];
+        return $filters;
+    }
+
 }
