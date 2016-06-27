@@ -26,7 +26,7 @@ class MongoDB implements Base
         $this->database = $this->conn->{$this->dbName};
     }
 
-    public function create($collection)
+    public function create($collection, $fields)
     {
         return $this->database->createCollection($collection);
     }
