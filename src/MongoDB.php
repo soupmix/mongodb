@@ -208,9 +208,9 @@ class MongoDB implements Base
         return ['total' => 0, 'data' => null];
     }
 
-    public function query($query)
+    public function query($collection)
     {
-        // reserved
+        return new MongoDBQueryBuilder($collection);
     }
 
     public static function buildFilter($filter)

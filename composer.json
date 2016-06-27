@@ -1,8 +1,8 @@
 {
     "name": "soupmix/mongodb",
     "type": "library",
-    "description": "Simple PHP MongoDB adapter to handle low level CRUD operations.",
-    "keywords": ["database","adapters","mongodb"],
+    "description": "Simple MongoDB abstraction layer adapter to handle CRUD operations.",
+    "keywords": ["database", "abstraction layer", "adapters", "mongodb"],
     "homepage": "https://github.com/soupmix/mongodb",
     "license": "MIT",
     "authors": [
@@ -13,8 +13,8 @@
         }
     ],
     "require": {
-        "soupmix/base": "~0.5.1",
-        "mongodb/mongodb": "^1.0.0"
+        "soupmix/base": "~0.6",
+        "mongodb/mongodb": "~1.0.2"
     },
     "require-dev": {
         "phpunit/phpunit": "^4.8"
