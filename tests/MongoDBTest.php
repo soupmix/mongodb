@@ -1,7 +1,6 @@
 <?php
 namespace tests;
 
-use Soupmix\MongoDB;
 
 class MongoDBTest extends \PHPUnit_Framework_TestCase
 {
@@ -12,11 +11,13 @@ class MongoDBTest extends \PHPUnit_Framework_TestCase
 
     protected function setUp()
     {
-        $this->client = new MongoDB([
+        $config =[
             'db_name' => 'mydb_test',
             'connection_string' => "mongodb://127.0.0.1",
             'options' => []
-        ]);
+        ];
+        $client = new \MongoDB\Client($config['connection_string'], $config['options']);
+        $this->client = new \Soupmix\MongoDB($config, $client);
     }
 
     public function testInsertGetDocument()

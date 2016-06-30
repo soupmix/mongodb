@@ -12,7 +12,7 @@ Simple MongoDB abstraction layer adapter  to handle CRUD operations written in P
 It's recommended that you use [Composer](https://getcomposer.org/) to install Soupmix.
 
 ```bash
-$ composer require soupmix/mongodb "~0.6"
+$ composer require soupmix/mongodb "~0.7"
 ```
 
 This will install Soupmix and all required dependencies. Soupmix requires PHP 5.6.0 or newer, mongodb extension: 1.1.0 or newer, [mongo-php-library 1.0.2](https://github.com/mongodb/mongo-php-library) library  or newer form MongoDB.
@@ -28,7 +28,9 @@ $adapter_config = [];
 $adapter_config['db_name'] ='db_name';
 $adapter_config['connection_string']="mongodb://127.0.0.1";
 $adapter_config['options'] =[];
-$m=new Soupmix\MongoDB($adapter_config);
+$config['db_name'] = $adapter_config;
+$client = new \MongoDB\Client($adapter_config['connection_string'], $adapter_config['options']);
+$m=new Soupmix\MongoDB($config, $client);
 
 
 $docs = [];

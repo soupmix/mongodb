@@ -5,25 +5,24 @@ namespace Soupmix;
 MongoDB Adapter
 */
 
-
 class MongoDB implements Base
 {
-    public $conn = null;
+    protected $conn = null;
 
     private $dbName = null;
 
-    public $database = null;
+    private $database = null;
 
-    public function __construct($config)
+    public function __construct($config, \MongoDB\Client $client)
     {
         $this->dbName = $config['db_name'];
-        $this->connect($config);
+        $this->conn = $client;
+        $this->database = $this->conn->{$this->dbName};
     }
 
-    public function connect($config)
+    public function getConnection()
     {
-        $this->conn = new \MongoDB\Client($config['connection_string'], $config['options']);
-        $this->database = $this->conn->{$this->dbName};
+        return $this->conn;
     }
 
     public function create($collection, $fields)
