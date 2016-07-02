@@ -8,3 +8,7 @@
 
 # PhpStorm
 .idea
+
+#composer
+composer.lock
+vendor/

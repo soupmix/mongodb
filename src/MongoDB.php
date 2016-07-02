@@ -144,7 +144,7 @@ class MongoDB implements Base
         return $result->getDeletedCount();
     }
 
-    public function find($collection, $filters, $fields = null, $sort = null, $start = 0, $limit = 25, $debug = false)
+    public function find($collection, $filters, $fields = null, $sort = null, $start = 0, $limit = 25)
     {
         $collection = $this->database->selectCollection($collection);
         if (isset($filters['id'])) {
@@ -209,7 +209,7 @@ class MongoDB implements Base
 
     public function query($collection)
     {
-        return new MongoDBQueryBuilder($collection);
+        return new MongoDBQueryBuilder($collection, $this);
     }
 
     public static function buildFilter($filter)
