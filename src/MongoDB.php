@@ -155,14 +155,7 @@ class MongoDB implements Base
         if ($filters != null) {
             $query_filters = ['$and' => self::buildFilter($filters)];
         }
-        if($debug){
-            return ['filters'=>$query_filters, 'start'=>$start, 'limit'=>$limit];
-        }
         $count = $collection->count($query_filters);
-
-        if($debug){
-            return ['filters'=>$query_filters, 'start'=>$start, 'limit'=>$limit,'sort'=>$sort];
-        }
         if ($count > 0) {
             $results = [];
             $options = [
