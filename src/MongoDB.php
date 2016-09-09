@@ -5,7 +5,7 @@ namespace Soupmix;
 MongoDB Adapter
 */
 
-class MongoDB implements Base
+final class MongoDB implements Base
 {
     protected $conn = null;
 
@@ -56,7 +56,6 @@ class MongoDB implements Base
             return (string) $docId;
         }
         return null;
-        
     }
 
     public function get($collection, $docId)
@@ -134,13 +133,11 @@ class MongoDB implements Base
     {
         $collection = $this->database->selectCollection($collection);
         $filter = self::buildFilter($filter)[0];
-
         if (isset($filter['id'])) {
             $filter['_id'] = new \MongoDB\BSON\ObjectID($filter['id']);
             unset($filter['id']);
         }
         $result = $collection->deleteMany($filter);
-
         return $result->getDeletedCount();
     }
 
