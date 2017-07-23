@@ -1,8 +1,9 @@
 <?php
 namespace tests;
 
+use PHPUnit\Framework\TestCase;
 
-class MongoDBTest extends \PHPUnit_Framework_TestCase
+class MongoDBTest extends TestCase
 {
     /**
      * @var \Soupmix\MongoDB $client
@@ -62,7 +63,7 @@ class MongoDBTest extends \PHPUnit_Framework_TestCase
 
         foreach ($docIds as $docId) {
             $result = $this->client->delete('test', ['id' => $docId]);
-            $this->assertTrue($result == 1);
+            $this->assertEquals(1, $result);
         }
     }
 

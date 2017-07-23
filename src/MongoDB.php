@@ -1,9 +1,9 @@
 <?php
 
 namespace Soupmix;
-/*
-MongoDB Adapter
-*/
+
+
+use MongoDB\BSON\ObjectID;
 
 final class MongoDB implements Base
 {
@@ -25,29 +25,29 @@ final class MongoDB implements Base
         return $this->conn;
     }
 
-    public function create($collection, $fields)
+    public function create(string $collection, array $fields)
     {
         return $this->database->createCollection($collection);
     }
 
-    public function drop($collection)
+    public function drop(string $collection)
     {
         return $this->database->dropCollection($collection);
     }
 
-    public function truncate($collection)
+    public function truncate(string $collection)
     {
         $this->database->dropCollection($collection);
         return $this->database->createCollection($collection);
     }
 
-    public function createIndexes($collection, $indexes)
+    public function createIndexes(string  $collection, array $indexes)
     {
         $collection = $this->database->selectCollection($collection);
         return $collection->createIndexes($indexes);
     }
 
-    public function insert($collection, $values)
+    public function insert(string $collection, array $values)
     {
         $collection = $this->database->selectCollection($collection);
         $result = $collection->insertOne($values);
@@ -58,21 +58,21 @@ final class MongoDB implements Base
         return null;
     }
 
-    public function get($collection, $docId)
+    public function get(string $collection, $docId)
     {
-        $collection = $this->database->selectCollection($collection);
-        if (gettype($docId) == "array") {
+        if (gettype($docId) === 'array') {
             return $this->multiGet($collection, $docId);
         }
-        return $this->singleGet($collection, $docId);
+        return $this->singleGet($collection, (string) $docId);
     }
 
-    private function singleGet($collection, $docId)
+    private function singleGet(string $collection, $docId)
     {
+        $collection = $this->database->selectCollection($collection);
         $options = [
             'typeMap' => ['root' => 'array', 'document' => 'array'],
         ];
-        $filter = ['_id' => new \MongoDB\BSON\ObjectID($docId)];
+        $filter = ['_id' => new ObjectID($docId)];
         $result = $collection->findOne($filter, $options);
         if ($result!==null) {
             $result['id'] = (string) $result['_id'];
@@ -81,14 +81,14 @@ final class MongoDB implements Base
         return $result;
     }
 
-    private function multiGet($collection, $docIds)
+    private function multiGet(string $collection, array $docIds)
     {
         $options = [
             'typeMap' => ['root' => 'array', 'document' => 'array'],
         ];
         $idList = [];
         foreach ($docIds as $itemId) {
-            $idList[]=['_id'=>new \MongoDB\BSON\ObjectID($itemId)];
+            $idList[]=['_id'=>new ObjectID($itemId)];
         }
         $filter = ['$or'=>$idList];
         $cursor = $collection->find($filter, $options);
@@ -106,11 +106,11 @@ final class MongoDB implements Base
         return $results;
     }
 
-    public function update($collection, $filters, $values)
+    public function update(string $collection, array $filters, array $values)
     {
         $collection = $this->database->selectCollection($collection);
         if (isset($filters['id'])) {
-            $filters['_id'] = new \MongoDB\BSON\ObjectID($filters['id']);
+            $filters['_id'] = new ObjectID($filters['id']);
             unset($filters['id']);
         }
         $query_filters = [];
@@ -129,23 +129,23 @@ final class MongoDB implements Base
         return $result->getModifiedCount();
     }
 
-    public function delete($collection, $filter)
+    public function delete(string $collection, array $filter)
     {
         $collection = $this->database->selectCollection($collection);
         $filter = self::buildFilter($filter)[0];
         if (isset($filter['id'])) {
-            $filter['_id'] = new \MongoDB\BSON\ObjectID($filter['id']);
+            $filter['_id'] = new ObjectID($filter['id']);
             unset($filter['id']);
         }
         $result = $collection->deleteMany($filter);
         return $result->getDeletedCount();
     }
 
-    public function find($collection, $filters, $fields = null, $sort = null, $start = 0, $limit = 25)
+    public function find(string $collection, ?array $filters, ?array $fields = null, ?array $sort = null, ?int $start = 0, ?int $limit = 25)
     {
         $collection = $this->database->selectCollection($collection);
         if (isset($filters['id'])) {
-            $filters['_id'] = new \MongoDB\BSON\ObjectID($filters['id']);
+            $filters['_id'] = new ObjectID($filters['id']);
             unset($filters['id']);
         }
         $query_filters = [];
@@ -197,7 +197,7 @@ final class MongoDB implements Base
         return ['total' => 0, 'data' => null];
     }
 
-    public function query($collection)
+    public function query(string $collection)
     {
         return new MongoDBQueryBuilder($collection, $this);
     }
