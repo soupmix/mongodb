@@ -19,6 +19,7 @@ class MongoDBTest extends TestCase
         ];
         $client = new \MongoDB\Client($config['connection_string'], $config['options']);
         $this->client = new \Soupmix\MongoDB($config, $client);
+        $client->mydb_test->dropCollection('test');
     }
 
     public function testInsertGetDocument()
@@ -30,7 +31,15 @@ class MongoDBTest extends TestCase
         $result = $this->client->delete('test', ['id' => $docId]);
         $this->assertTrue($result == 1);
     }
-
+    public function testDeleteDocument()
+    {
+        $docId = $this->client->insert('test', ['id' => 1, 'title' => 'test', 'age'=>23]);
+        $document = $this->client->get('test', $docId);
+        $this->assertArrayHasKey('title', $document);
+        $this->assertArrayHasKey('id', $document);
+        $result = $this->client->delete('test', ['age' => 23, 'title' => 'test']);
+        $this->assertEquals(1, $result);
+    }
 
 
     public function testFindDocuments()

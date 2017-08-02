@@ -132,7 +132,9 @@ final class MongoDB implements Base
     public function delete(string $collection, array $filter)
     {
         $collection = $this->database->selectCollection($collection);
-        $filter = self::buildFilter($filter)[0];
+
+        $filters = ['$and' => self::buildFilter($filter)];
+
         if (isset($filter['id'])) {
             $filter['_id'] = new ObjectID($filter['id']);
             unset($filter['id']);
